@@ -1,3 +1,5 @@
+The technology stack includes Java 17, Spring Boot 3.2, Spring JPA, Maven and an in-memory H2 database 
+
 Create Dispenser: 
 	End point: (POST) localhost:8080/dispenser/
 	example body: {"flowVolume": "0.09953"}
@@ -43,3 +45,5 @@ Returns the money spent by the given dispenser Id
 				    ]
 				}
 	Error id: response : "There is no Dispenser with Id: 76485a67-88cf-4e2d-93f8-0060793c5cdb"
+	
+	
