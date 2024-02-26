@@ -1,0 +1,45 @@
+Create Dispenser: 
+	End point: (POST) localhost:8080/dispenser/
+	example body: {"flowVolume": "0.09953"}
+	example response: 200 ok. {
+    							"flowVolume": 0.09953,
+   								 "dispenserId": "76485a67-88cf-4e2d-93f8-60793c5cdbde"
+							  }
+							  
+Change Dispenser open/close :
+	End point:(PUT) localhost:8080/dispenser/(the id sent when create dispenser)76485a67-88cf-4e2d-93f8-60793c5cdbde
+	example body(open):{
+    				 "status": "open",
+    				 "updatedAt":"2024-02-23 12:42:23"			
+				}
+	Response : 202 accepted
+	example body(close):{
+    				 "status": "close",
+    				 "updatedAt":"2024-02-23 12:42:43"			
+				}
+	Response : 202 accepted
+	Error:response 409 conflict
+			if you put id wrong: response ; "There is no Dispenser with Id: 76485a67-88cf-4e2d-93f8-0060793c5cdb"
+			if you try to close without close: response: "the dispenser with id: 76485a67-88cf-4e2d-93f8-60793c5cdbde is already close"
+	        if you try to close without open: response: "the dispenser with id: 76485a67-88cf-4e2d-93f8-60793c5cdbde is already close"
+	        
+Returns the money spent by the given dispenser Id
+	End point:(GET)localhost:8080/dispenser/76485a67-88cf-4e2d-93f8-60793c5cdbde/spending
+	Example response: 200OK
+				{	"Amount": 37.7964,
+				    "Usages": [
+				        {
+				            "openedAt": "2024-02-20 11:54:56",
+				            "closedAt": "2024-02-20 11:54:59",
+				            "totalSpend": 3.6577,
+				            "flowVolume": 0.09953
+				        },
+				        {
+				            "openedAt": "2024-02-23 12:42:23",
+				            "closedAt": null,  /*If it is not already closed, take the current time as the close time */
+				            "totalSpend": 34.1387,
+				            "flowVolume": 0.09953
+				        }
+				    ]
+				}
+	Error id: response : "There is no Dispenser with Id: 76485a67-88cf-4e2d-93f8-0060793c5cdb"

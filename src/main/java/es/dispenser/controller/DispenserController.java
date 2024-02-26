@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.dispenser.domain.Dispenser;
 import es.dispenser.dto.ChangeDispenserDto;
+import es.dispenser.dto.DispenserDto;
 import es.dispenser.dto.UsageDto;
 import es.dispenser.service.DispenserService;
 import es.dispenser.service.DraftService;
@@ -31,54 +34,39 @@ public class DispenserController {
 	DraftService draftService ;		
 
 	@PostMapping 
-	public Map<String, Object> createDispenser(@RequestBody Dispenser dispenser){
-		HashMap<String, Object> map = new HashMap<String, Object>();
+	public ResponseEntity<?> createDispenser(@RequestBody DispenserDto dispFlowVolume ){		
 		
-		try {							
-			map.put("Dispenser Id ", dispenserService.saveDispenser(dispenser));
-			map.put("Dispenser flow_volume ", dispenser.getFlowVolume());
-			map.put("success", "true");
-			map.put("message", "Ok");				
+		try {
+			DispenserDto dispenserDto = dispenserService.createDispenser(dispFlowVolume.getFlowVolume());						
+			return ResponseEntity.status(HttpStatus.OK).body(dispenserDto);
 		} catch (Exception e) {
-			map.put("success", "false");
-			map.put("message", e.getMessage());
-		}		
-		return map;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}			 
 	}
 	
 	@PutMapping ("/{id}")
-	public Map<String, Object> changeDispenser(@PathVariable(name = "id") UUID id, @RequestBody ChangeDispenserDto changeDisp){
-		HashMap<String, Object> map = new HashMap<String, Object>();
+	public ResponseEntity<?> changeDispenser(@PathVariable(name = "id") UUID id, @RequestBody ChangeDispenserDto changeDisp){		
 		
-		try {					
-			Dispenser dispenser = dispenserService.findOneDispenser(id);
-			draftService.createDraft (dispenser, changeDisp);
-			dispenserService.saveDispenser(dispenser);
-			map.put("Dispenser  ",dispenser);			
-			map.put("success", "true");
-			map.put("message", "Ok");			
+		try {								
+			draftService.openCloseTap(id, changeDisp);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();					
 		} catch (Exception e) {
-			map.put("success", "false");
-			map.put("message", e.getMessage());
-		}		
-		return map;
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}				
 	}
 	
 	@GetMapping ("/{id}/spending")
-	public Map<String, Object> spendingDispenser(@PathVariable(name = "id") UUID id){
+	public ResponseEntity<?>spendingDispenser(@PathVariable(name = "id") UUID id){
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		List <UsageDto> usages = new ArrayList<UsageDto>();
 
 		try {					
-			usages = draftService.spendingByDispenser(dispenserService.findOneDispenser(id));
-			map.put("Amount",  draftService.calculateAmount(usages));
-			map.put("Usages  ",usages);			
-			map.put("success", "true");
-			map.put("message", "Ok");		
+			usages = dispenserService.spendingByDispenser(id);
+			map.put("Amount",  dispenserService.calculateAmount(usages));
+			map.put("Usages",usages);			
+			return ResponseEntity.status(HttpStatus.OK).body(map);
 		} catch (Exception e) {
-			map.put("success", "false");
-			map.put("message", e.getMessage());
-		}	
-		return map;
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}		
 	}
 }

@@ -28,20 +28,26 @@ public class Dispenser {
 	private List<Draft> drafts=new ArrayList<Draft>();		
 
 	@Column(name = "flow_Volume") 
-	private Float flowVolume; 
+	private Double flowVolume; 
 
 	private String status;
 
+	public Dispenser() {
+		super();
+	}
+	public Dispenser(Double flowVolume) {
+		this.flowVolume = flowVolume;
+	}
 	public List<Draft> getDrafts() {
 		return drafts;
 	}
 	public void addDrafts(Draft draft) {
 		drafts.add(draft);
 	}		
-	public Float getFlowVolume() {
+	public Double getFlowVolume() {
 		return flowVolume;
 	}
-	public void setFlowVolume(Float flowVolume) {
+	public void setFlowVolume(Double flowVolume) {
 		this.flowVolume = flowVolume;
 	}
 	public String getStatus() {
@@ -53,4 +59,8 @@ public class Dispenser {
 	public UUID getDispenserId() {
 		return dispenserId;
 	}
+	public void setDispenserId(UUID dispenserId) {
+		this.dispenserId = dispenserId;
+	}
+	
 }

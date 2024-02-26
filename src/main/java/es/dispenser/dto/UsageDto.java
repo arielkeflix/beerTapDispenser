@@ -9,7 +9,7 @@ public class UsageDto {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")	
 	private LocalDateTime closedAt;
 	private Double totalSpend;
-	private Float flowVolume;
+	private Double flowVolume;
 	
 	public LocalDateTime getOpenedAt() {
 		return openedAt;
@@ -29,10 +29,10 @@ public class UsageDto {
 	public void setTotalSpend(Double totalSpend) {
 		this.totalSpend = totalSpend;
 	}
-	public Float getFlowVolume() {
+	public Double getFlowVolume() {
 		return flowVolume;
 	}
-	public void setFlowVolume(Float flowVolume) {
+	public void setFlowVolume(Double flowVolume) {
 		this.flowVolume = flowVolume;
 	}		
 }
